@@ -1,3 +1,8 @@
+/**
+ * @file chatgui.h
+ * @brief Defines the wxWidgets GUI components for the chatbot application.
+ */
+
 #ifndef CHATGUI_H_
 #define CHATGUI_H_
 #include <memory>
@@ -5,94 +10,146 @@
 
 class ChatLogic; // forward declaration
 
-// middle part of the window containing the dialog between user and chatbot
+/**
+ * @class ChatBotPanelDialog
+ * @brief Middle part of the window containing the dialog between user and chatbot.
+ *
+ * Displays the conversation history and owns the ChatLogic instance.
+ * Inherits from wxScrolledWindow for scrollable content.
+ */
 class ChatBotPanelDialog : public wxScrolledWindow
 {
 private:
-    // control elements
+    /** @brief Sizer for dialog items. */
     wxBoxSizer *_dialogSizer;
+    /** @brief Placeholder/cached image for display. */
     wxBitmap _image;
 
     //// STUDENT CODE
     ////
 
+    /** @brief Owned ChatLogic controller. */
     std::unique_ptr<ChatLogic> _chatLogic;
 
     ////
     //// EOF STUDENT CODE
 
 public:
-    // constructor / destructor
+    /**
+     * @brief Constructs the dialog panel.
+     * @param parent Parent window.
+     * @param id Window ID.
+     */
     ChatBotPanelDialog(wxWindow *parent, wxWindowID id);
+    /** @brief Destructor. */
     ~ChatBotPanelDialog();
 
-    // getter / setter
-    ChatLogic *GetChatLogicHandle() { return _chatLogic.get(); }//return the pointer to the ChatLogic object with get() as we are using a unique_ptr
+    /** @brief Returns the ChatLogic pointer (from unique_ptr). */
+    ChatLogic *GetChatLogicHandle() { return _chatLogic.get(); }
 
-    // events
+    /** @brief Paint event handler. */
     void paintEvent(wxPaintEvent &evt);
+    /** @brief Triggers a repaint. */
     void paintNow();
+    /** @brief Renders content to the device context. */
     void render(wxDC &dc);
 
-    // proprietary functions
+    /**
+     * @brief Adds a dialog line (user or chatbot message).
+     * @param text Message text.
+     * @param isFromUser True if from user, false if from chatbot.
+     */
     void AddDialogItem(wxString text, bool isFromUser = true);
+    /**
+     * @brief Prints a chatbot response in the dialog.
+     * @param response Response string.
+     */
     void PrintChatbotResponse(std::string response);
 
     DECLARE_EVENT_TABLE()
 };
 
-// dialog item shown in ChatBotPanelDialog
+/**
+ * @class ChatBotPanelDialogItem
+ * @brief A single dialog item (message bubble) shown in ChatBotPanelDialog.
+ *
+ * Displays one message with optional chatbot image and text.
+ */
 class ChatBotPanelDialogItem : public wxPanel
 {
 private:
-    // control elements
+    /** @brief Optional chatbot avatar image. */
     wxStaticBitmap *_chatBotImg;
+    /** @brief Message text. */
     wxStaticText *_chatBotTxt;
 
 public:
-    // constructor / destructor
+    /**
+     * @brief Constructs a dialog item.
+     * @param parent Parent panel.
+     * @param text Message text.
+     * @param isFromUser True if user message, false if chatbot.
+     */
     ChatBotPanelDialogItem(wxPanel *parent, wxString text, bool isFromUser);
 };
 
-// frame containing all control elements
+/**
+ * @class ChatBotFrame
+ * @brief Main frame containing the dialog panel and text input.
+ */
 class ChatBotFrame : public wxFrame
 {
 private:
-    // control elements
+    /** @brief The dialog panel. */
     ChatBotPanelDialog *_panelDialog;
+    /** @brief Text control for user input. */
     wxTextCtrl *_userTextCtrl;
 
-    // events
+    /** @brief Handles Enter key to send message. */
     void OnEnter(wxCommandEvent &WXUNUSED(event));
 
 public:
-    // constructor / desctructor
+    /**
+     * @brief Constructs the main frame.
+     * @param title Window title.
+     */
     ChatBotFrame(const wxString &title);
 };
 
-// control panel for background image display
+/**
+ * @class ChatBotFrameImagePanel
+ * @brief Panel for displaying the background image in the frame.
+ */
 class ChatBotFrameImagePanel : public wxPanel
 {
-    // control elements
+    /** @brief Background image. */
     wxBitmap _image;
 
 public:
-    // constructor / desctructor
+    /**
+     * @brief Constructs the image panel.
+     * @param parent Parent frame.
+     */
     ChatBotFrameImagePanel(wxFrame *parent);
 
-    // events
+    /** @brief Paint event handler. */
     void paintEvent(wxPaintEvent &evt);
+    /** @brief Triggers a repaint. */
     void paintNow();
+    /** @brief Renders the image to the device context. */
     void render(wxDC &dc);
 
     DECLARE_EVENT_TABLE()
 };
 
-// wxWidgets app that hides main()
+/**
+ * @class ChatBotApp
+ * @brief wxWidgets application class; provides OnInit() instead of main().
+ */
 class ChatBotApp : public wxApp
 {
 public:
-    // events
+    /** @brief Initializes the application and shows the main frame. */
     virtual bool OnInit();
 };
 
